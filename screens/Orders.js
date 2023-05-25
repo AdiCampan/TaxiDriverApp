@@ -7,17 +7,27 @@ import {
   ScrollView,
 } from "react-native";
 import { ref, onValue, set, remove, update } from "firebase/database";
-import { db, projectFirestore } from "../firebase";
+import { db } from "../firebase";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { database } from "../firebase";
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 const Orders = () => {
   const [ordersList, setOrdersList] = useState();
   const [orderState, setOrderState] = useState("In asteptare");
   const [driverState, setDriverState] = useState("Liber");
+  const [driverId, setDriverId] = useState();
 
   const navigation = useNavigation();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setDriverId(user.uid);
+    } else {
+    }
+  });
 
   const waitingOrders = () => {
     const ordersRef = ref(db, "orders");
@@ -43,7 +53,7 @@ const Orders = () => {
   }, [orderState]);
 
   const getOrder = (order) => {
-    const newState = { state: "preluat" };
+    const newState = { state: "preluat", driverId: driverId };
 
     const orderRef = ref(db, `orders/${order.id}`);
     update(orderRef, newState)

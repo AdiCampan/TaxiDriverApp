@@ -7,7 +7,7 @@ import Orders from "./screens/Orders";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
+
 import Order from "./components/Order";
 // import LogIn from "./components/LogIn";
 import LoginScreen from "./components/Login/screens/LoginScreen";
@@ -15,6 +15,7 @@ import StartScreen from "./components/Login/screens/StartScreen";
 import RegisterScreen from "./components/Login/screens/RegisterScreen";
 import ResetPasswordScreen from "./components/Login/screens/ResetPasswordScreen";
 import Dashboard from "./components/Login/screens/Dashboard";
+import Settings from "./screens/Settings";
 
 const HomeStackNavigator = createNativeStackNavigator();
 const OrderStackNavigator = createNativeStackNavigator();
@@ -22,9 +23,7 @@ function HomeStack() {
   return (
     <HomeStackNavigator.Navigator
       initialRouteName="StartScreen"
-      screenOptions={{
-        headerShown: false,
-      }}
+      screenOptions={{ headerShown: false }}
     >
       <HomeStackNavigator.Screen name="StartScreen" component={StartScreen} />
       <HomeStackNavigator.Screen name="LoginScreen" component={LoginScreen} />
@@ -32,6 +31,7 @@ function HomeStack() {
         name="RegisterScreen"
         component={RegisterScreen}
       />
+      <HomeStackNavigator.Screen name="Settings" component={Settings} />
       <HomeStackNavigator.Screen name="Dashboard" component={Dashboard} />
       <HomeStackNavigator.Screen
         name="ResetPasswordScreen"
@@ -84,12 +84,12 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="MapScreen"
-        component={MapScreen}
+        name="Settings"
+        component={Settings}
         options={{
-          tabBarLabel: "Harta",
+          tabBarLabel: "Setari",
           tabBarIcon: ({ color, size }) => (
-            <Feather name="map" size={24} color="black" />
+            <AntDesign name="setting" size={24} color="black" />
           ),
         }}
       />

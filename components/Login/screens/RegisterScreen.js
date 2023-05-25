@@ -15,16 +15,22 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../../../firebase";
+import { db } from "../../../firebase";
+import { ref, onValue, set } from "firebase/database";
+import * as Crypto from "expo-crypto";
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState({ value: "", error: "" });
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
+  const [error, setError] = useState(null);
 
   const onSignUpPressed = () => {
+    setError(null);
     const nameError = nameValidator(name.value);
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
@@ -34,20 +40,46 @@ export default function RegisterScreen({ navigation }) {
       setPassword({ ...password, error: passwordError });
       return;
     }
+
     createUserWithEmailAndPassword(auth, email.value, password.value)
       .then((userCredential) => {
-        console.log("Account created!");
         const user = userCredential.user;
-        console.log(user);
+
+        const driver = {
+          name: name.value,
+          email: email.value,
+          state: "disabled",
+          rol: "driver",
+        };
+        const driversRef = ref(db, `drivers/${user.uid}/`);
+        set(driversRef, driver)
+          .then((data) => {
+            console.log("driver added", data);
+
+            updateProfile(auth.currentUser, {
+              displayName: name.value,
+              photoURL: "https://example.com/jane-q-user/profile.jpg",
+            })
+              .then(() => {
+                // Profile updated!
+                // ...
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "Dashboard" }],
+                });
+              })
+              .catch((error) => {
+                // An error occurred
+                // ...
+              });
+          })
+          .catch((err) => console.error(err));
       })
+
       .catch((error) => {
-        console.log(error);
-        Alert.alert(error.message);
+        console.log("register error", error);
+        setError(error.message);
       });
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Dashboard" }],
-    });
   };
 
   return (
@@ -97,6 +129,11 @@ export default function RegisterScreen({ navigation }) {
           <Text style={styles.link}>Login</Text>
         </TouchableOpacity>
       </View>
+      {error && (
+        <View>
+          <Text>{error}</Text>
+        </View>
+      )}
     </Background>
   );
 }

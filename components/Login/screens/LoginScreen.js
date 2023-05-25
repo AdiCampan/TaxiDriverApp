@@ -14,6 +14,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../../../firebase";
@@ -34,18 +35,17 @@ export default function LoginScreen({ navigation }) {
       .then((userCredential) => {
         console.log("Signed in!");
         const user = userCredential.user;
-        navigation.navigate("Dashboard");
-        console.log(user);
+        navigation.navigate("Home");
       })
       .catch((error) => {
-        Alert.alert(error.message);
+        alert(error.message);
         console.log(error);
       });
   };
 
   return (
     <Background>
-      <BackButton goBack={navigation.goBack} />
+      {/* <BackButton goBack={navigation.goBack} /> */}
       <Logo />
       <Header>Welcome back.</Header>
       <TextInput

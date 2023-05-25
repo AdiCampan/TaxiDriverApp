@@ -1,25 +1,29 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import MapView, { Marker, Polyline } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 import * as Location from "expo-location";
 import { useRoute } from "@react-navigation/native";
+import { GOOGLE_MAPS_API_KEY } from "@env";
+import Car from "../assets/carIcon.png";
 
 const Order = () => {
+  const route = useRoute();
+  const { orderParams } = route.params;
   const [order, setOrder] = useState();
   const [addressCoords, setAddressCoords] = useState();
-  const route = useRoute();
   const [region, setRegion] = useState(null);
   const [newAddress, setNewAddress] = useState(null);
   const [origin, setOrigin] = useState({
-    latitude: 39.970478,
-    longitude: -0.257338,
+    latitude: 39.96089,
+    longitude: -0.22871,
   });
   // const { orderId, orderAddress } = route.params;
   useEffect(() => {
-    const { orderParams } = route.params;
     setOrder(orderParams);
     setRegion(orderParams.addressCoords);
   }, [route, addressCoords]);
+
   console.log(region);
 
   useEffect(() => {
@@ -63,32 +67,42 @@ const Order = () => {
         showsMyLocationButton={true}
         showsUserLocation={true}
         followsUserLocation={true}
-        region={region}
+        region={origin}
         style={styles.map}
         initialRegion={{
           latitude: origin.latitude,
           longitude: origin.longitude,
-          latitudeDelta: 0.09,
-          longitudeDelta: 0.04,
+          latitudeDelta: 0.15,
+          longitudeDelta: 0.15,
         }}
         // onRegionChange={handleRegionChange}
         provider="google"
       >
         {origin && (
-          <Marker
-            coordinate={region}
-            title="Taxi here !"
-            pinColor="black"
-            // draggable={true}
-            // onDragEnd={(e) => {
-            //   setOrigin({
-            //     latitude: e.nativeEvent.coordinate.latitude,
-            //     longitude: e.nativeEvent.coordinate.longitude,
-            //   });
-            // }}
-          ></Marker>
+          <>
+            <MapViewDirections
+              origin={origin}
+              destination={region}
+              strokeColor="purple"
+              strokeWidth={7}
+              apikey={GOOGLE_MAPS_API_KEY}
+            />
+            <Marker
+              coordinate={origin}
+              image={Car}
+              title="I'm here !"
+              pinColor="black"
+              // draggable={true}
+              // onDragEnd={(e) => {
+              //   setOrigin({
+              //     latitude: e.nativeEvent.coordinate.latitude,
+              //     longitude: e.nativeEvent.coordinate.longitude,
+              //   });
+              // }}
+            ></Marker>
+            <Marker coordinate={region} title="Taxi !" />
+          </>
         )}
-        <Marker></Marker>
       </MapView>
       <View style={styles.infoBox}>
         <Text style={styles.infoText}>{order?.address}</Text>
