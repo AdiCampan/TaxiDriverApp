@@ -61,6 +61,22 @@ export default function Dashboard({ navigation }) {
     });
   }
 
+  useEffect(() => {
+    if (driver?.private?.state === "online") {
+      navigation.navigate("Settings");
+    }
+  }, [driver]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      if (driver?.private?.state === "online") {
+        navigation.navigate("Settings");
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation, driver]);
+
   console.log("driver", user);
 
   return (
@@ -74,8 +90,6 @@ export default function Dashboard({ navigation }) {
       <Button mode="outlined" onPress={handlerLogout}>
         Logout
       </Button>
-
-      {driver?.state === "online" && navigation.navigate("Settings")}
     </Background>
   );
 }

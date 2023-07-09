@@ -33,9 +33,9 @@ export default function LoginScreen({ navigation }) {
     }
     signInWithEmailAndPassword(auth, email.value, password.value)
       .then((userCredential) => {
-        console.log("Signed in!");
         const user = userCredential.user;
-        navigation.navigate("Home");
+        console.log("asd");
+        navigation.navigate("HomeScreen");
       })
       .catch((error) => {
         alert(error.message);

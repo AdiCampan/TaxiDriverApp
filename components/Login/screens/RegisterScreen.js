@@ -48,10 +48,9 @@ export default function RegisterScreen({ navigation }) {
         const driver = {
           name: name.value,
           email: email.value,
-          state: "disabled",
-          rol: "driver",
+          role: "driver",
         };
-        const driversRef = ref(db, `drivers/${user.uid}/`);
+        const driversRef = ref(db, `drivers/${user.uid}`);
         set(driversRef, driver)
           .then((data) => {
             console.log("driver added", data);

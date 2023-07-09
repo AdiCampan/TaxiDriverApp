@@ -1,34 +1,46 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import MapView, { Marker, Polyline } from "react-native-maps";
+import { ref, update } from "firebase/database";
+import { db } from "../firebase";
 import MapViewDirections from "react-native-maps-directions";
 import * as Location from "expo-location";
 import { useRoute } from "@react-navigation/native";
 import { GOOGLE_MAPS_API_KEY } from "@env";
 import Car from "../assets/carIcon.png";
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 const Order = () => {
+  const [driverId, setDriverId] = useState("");
+
   const route = useRoute();
   const { orderParams } = route.params;
   const [order, setOrder] = useState();
   const [addressCoords, setAddressCoords] = useState();
-  const [region, setRegion] = useState(null);
+  const [destination, setDestination] = useState(null);
   const [newAddress, setNewAddress] = useState(null);
   const [origin, setOrigin] = useState({
     latitude: 39.96089,
     longitude: -0.22871,
   });
+  onAuthStateChanged(auth, (driver) => {
+    if (driver) {
+      setDriverId(driver.uid);
+    } else {
+    }
+  });
   // const { orderId, orderAddress } = route.params;
   useEffect(() => {
     setOrder(orderParams);
-    setRegion(orderParams.addressCoords);
+    setDestination(orderParams.addressCoords);
   }, [route, addressCoords]);
 
-  console.log(region);
+  // console.log(typeof order.startDate);
 
   useEffect(() => {
     if (newAddress) {
-      setRegion({
+      setDestination({
         latitude: newAddress.latitude,
         longitude: newAddress.longitude,
         latitudeDelta: 0.015,
@@ -57,8 +69,31 @@ const Order = () => {
   }, []);
 
   const handleRegionChange = (newRegion) => {
-    setRegion(newRegion);
+    setDestination(newRegion);
     MapView.current.animateToRegion(newRegion, 500);
+  };
+
+  const newDriverState = () => {
+    const newState = { state: "Liber" };
+
+    const driverRef = ref(db, `drivers/${driverId}`);
+    update(driverRef, newState)
+      .then((data) => console.log("Driver Free"))
+      .catch((err) => console.error(err));
+  };
+
+  const rejectOrder = () => {
+    const newState = { state: "Refuzat" };
+
+    const orderRef = ref(db, `orders/${order.id}`);
+    update(orderRef, newState)
+      .then((data) => console.log("Order rejected"))
+      .catch((err) => console.error(err));
+
+    newDriverState();
+
+    // TO DO
+    // setDriverState("Liber");
   };
 
   return (
@@ -67,7 +102,7 @@ const Order = () => {
         showsMyLocationButton={true}
         showsUserLocation={true}
         followsUserLocation={true}
-        region={origin}
+        region={destination}
         style={styles.map}
         initialRegion={{
           latitude: origin.latitude,
@@ -82,7 +117,7 @@ const Order = () => {
           <>
             <MapViewDirections
               origin={origin}
-              destination={region}
+              destination={destination}
               strokeColor="purple"
               strokeWidth={7}
               apikey={GOOGLE_MAPS_API_KEY}
@@ -100,16 +135,21 @@ const Order = () => {
               //   });
               // }}
             ></Marker>
-            <Marker coordinate={region} title="Taxi !" />
+            <Marker coordinate={destination} title="Taxi !" />
           </>
         )}
       </MapView>
       <View style={styles.infoBox}>
         <Text style={styles.infoText}>{order?.address}</Text>
-        <Text style={styles.infoText}> {order?.startDate}</Text>
+        <Text style={styles.infoText}>
+          {"Solicitarea facuta la: "}
+          {new Date(order?.startDate).toLocaleTimeString()}
+        </Text>
       </View>
       <TouchableOpacity onPress={() => {}} style={styles.button}>
-        <Text style={styles.textButton}>REFUZ COMANDA</Text>
+        <Text onPress={rejectOrder} style={styles.textButton}>
+          REFUZ COMANDA
+        </Text>
       </TouchableOpacity>
     </View>
   );

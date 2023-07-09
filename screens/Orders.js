@@ -53,7 +53,7 @@ const Orders = () => {
   }, [orderState]);
 
   const getOrder = (order) => {
-    const newState = { state: "preluat", driverId: driverId };
+    const newState = { state: "Preluat", driverId: driverId };
 
     const orderRef = ref(db, `orders/${order.id}`);
     update(orderRef, newState)

@@ -19,6 +19,8 @@ import Settings from "./screens/Settings";
 
 const HomeStackNavigator = createNativeStackNavigator();
 const OrderStackNavigator = createNativeStackNavigator();
+const LoginStackNavigator = createNativeStackNavigator();
+const StartStackNavigator = createNativeStackNavigator();
 function HomeStack() {
   return (
     <HomeStackNavigator.Navigator
@@ -31,14 +33,14 @@ function HomeStack() {
         name="RegisterScreen"
         component={RegisterScreen}
       />
-      <HomeStackNavigator.Screen name="Settings" component={Settings} />
+      {/* <HomeStackNavigator.Screen name="Settings" component={Settings} /> */}
       <HomeStackNavigator.Screen name="Dashboard" component={Dashboard} />
       <HomeStackNavigator.Screen
         name="ResetPasswordScreen"
         component={ResetPasswordScreen}
       />
 
-      <HomeStackNavigator.Screen name="Home" component={HomeScreen} />
+      <HomeStackNavigator.Screen name="HomeScreen" component={HomeScreen} />
     </HomeStackNavigator.Navigator>
   );
 }
@@ -62,7 +64,7 @@ function MyTabs() {
       }}
     >
       <Tab.Screen
-        name="HomeScreen"
+        name="HomeStack"
         component={HomeStack}
         options={{
           tabBarLabel: "Home",
@@ -101,6 +103,18 @@ export default function Navigation() {
   return (
     <NavigationContainer>
       <MyTabs />
+      {/* <StartStackNavigator.Navigator>
+        <StartStackNavigator.Screen
+          name="StartScreen"
+          component={StartScreen}
+        />
+      </StartStackNavigator.Navigator>
+      <LoginStackNavigator.Navigator>
+        <LoginStackNavigator.Screen
+          name="LoginScreen"
+          component={LoginScreen}
+        />
+      </LoginStackNavigator.Navigator> */}
     </NavigationContainer>
   );
 }

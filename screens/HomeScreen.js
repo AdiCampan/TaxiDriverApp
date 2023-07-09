@@ -17,8 +17,16 @@ import Background from "../components/Login/components/Background";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [authId, setAuthId] = useState();
+  const [authId, setAuthId] = useState(null);
   const [driver, setDriver] = useState();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setAuthId(user.uid);
+    }
+  });
+
+  console.log("AuthID", authId);
 
   const getLoggedInUser = async () => {
     const driversRef = ref(db, `drivers/${authId}/`);
@@ -30,19 +38,12 @@ const HomeScreen = () => {
 
   useEffect(() => {
     getLoggedInUser();
-  }, []);
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      setAuthId(user.uid);
-    } else {
-      navigation.navigate("StartScreen");
-    }
-  });
+  }, [authId]);
 
   const onLogOutPressed = async () => {
     await signOut(auth);
-    console.log("user isLogOut", user);
+    console.log("user isLogOut");
+    navigation.navigate("StartScreen");
   };
 
   return (
